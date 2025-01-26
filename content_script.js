@@ -30,7 +30,7 @@
 
   let player = null
 
-  chrome.extension.onMessage.addListener((message) => {
+  chrome.runtime.onMessage.addListener((message) => {
     if (message.action === 'show-notification') {
       showNotification()
     }

@@ -91,17 +91,18 @@ chrome.commands.onCommand.addListener((command) => {
 })
 
 function updateCurrentWindowId () {
-  // why then sometimes the focus is lost
-  // for example, the variable can have -1,
-  // although in focus there is actually another window
-  chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-    if (tabs.length) currentWindowId = tabs[0].windowId
-  })
-
-  if (currentWindowId === chrome.tabs.TAB_ID_NONE) return
+  chrome.tabs.onActivated.addListener((activeInfo) => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+      currentWindowId = tab.windowId;
+    });
+  });
 }
 
 function doToggle () {
+  if (currentWindowId === -1) {
+    console.warn('current window is not a valid window, please select a tab')
+    return
+  }
   if (getPreviousTab()) {
     chrome.tabs.update(getPreviousTab(), {active: true})
   } else {
